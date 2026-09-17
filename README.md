@@ -26,10 +26,12 @@ See [`container-support.patch`](container-support.patch) for the exact diff if y
 
 ## Flashing
 
+Download the prebuilt image from the [Releases page](https://github.com/tingao/dream2lte-droidspaces-kernel/releases/latest).
+
 This replaces the **BOOT partition only** — ramdisk, system, GApps, etc. are untouched. You need an existing working LineageOS 18.1 install on this device with root (Magisk or similar) already set up, since the flash is done via `dd` from a rooted shell:
 
 ```
-adb push boot.img /sdcard/boot.img
+adb push dream2lte-lineage18.1-droidspaces-boot.img /sdcard/boot.img
 adb shell su -c "dd if=/sdcard/boot.img of=/dev/block/platform/11120000.ufs/by-name/BOOT"
 adb reboot
 ```
