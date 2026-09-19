@@ -1,0 +1,9 @@
+# These files are consumed on Linux (a kernel tree, a rooted Android shell).
+# Force LF so a Windows checkout cannot corrupt them: a .patch with CRLF will
+# not apply, and a shell script with CRLF fails with "\r: command not found".
+* text=auto
+
+*.patch text eol=lf
+*.md    text eol=lf
+*.sh    text eol=lf
+*.cfg   text eol=lf
