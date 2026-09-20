@@ -83,3 +83,23 @@ The script deliberately runs *on the device* and is self-healing: it saves the p
 60 s for association and a successful ping, and restores that state by itself if Wi-Fi does not come back.
 On a headless phone that revert path is the difference between a reboot and a rescue. `status` prints the
 current picture and `off` undoes it.
+
+### The boot-time trap this ROM has
+
+Airplane mode is *configured* to cut Wi-Fi too — `airplane_mode_radios` starts as
+`cell,bluetooth,wifi,nfc,wimax`. On this ROM that is fatal for a server: after a reboot with airplane mode
+on, the Wi-Fi stack comes up dead (`Wifi is disabled`, supplicant `UNINITIALIZED`, no address), and
+**neither `svc wifi enable` nor `cmd wifi set-wifi-enabled enabled` revives it** — the handset stays
+offline until airplane mode is cleared and it is rebooted again. That is exactly what happened here on the
+first attempt.
+
+`99-airplane-wifi.sh` therefore:
+
+1. removes `wifi` from `airplane_mode_radios`, so airplane mode only cuts the modem;
+2. enables airplane mode and re-enables Wi-Fi with `svc wifi enable`, `settings put global wifi_on 1`
+   **and `cmd wifi set-wifi-enabled enabled`** — the last one leaves `wifi_on=2`, the persisted state that
+   survives a boot with airplane mode still on;
+3. reverts everything if Wi-Fi does not come back.
+
+Verify it with a **real reboot** before trusting it. Cold-booted twice after these changes: container up in
+~10 s, wake lock re-held, cloudflared active, tunnel 4/4, Wi-Fi up, airplane mode on and the modem cut.
