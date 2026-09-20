@@ -66,3 +66,20 @@ A gap in the samples, or a rising `PM: suspend entry` count, means the handset s
   Judge by the log gap, not the gauge.
 * **`usb/online=0` with `status=Discharging` is also normal** on a phone whose charging is managed by
   ACC. It does not mean the cable is data-only.
+
+## Related: the idle modem
+
+Keeping the phone awake costs a little power, so it is worth removing the power that buys nothing. On this
+handset the battery report named the culprit immediately:
+
+```
+Cell standby: 2558 mAh (radio)
+```
+
+— the modem, powered while **no SIM was inserted**. `extras/99-airplane-wifi.sh on` enables airplane mode
+and switches Wi-Fi straight back on, which is unaffected by airplane mode once explicitly re-enabled.
+
+The script deliberately runs *on the device* and is self-healing: it saves the previous state, waits up to
+60 s for association and a successful ping, and restores that state by itself if Wi-Fi does not come back.
+On a headless phone that revert path is the difference between a reboot and a rescue. `status` prints the
+current picture and `off` undoes it.
