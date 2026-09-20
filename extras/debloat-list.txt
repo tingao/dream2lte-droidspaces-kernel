@@ -1,0 +1,30 @@
+# S8+ (dream2lte, LineageOS 18.1 + GApps) - headless server debloat list.
+# One package per line; blank lines and # comments ignored.
+#
+# The device runs exactly two third-party apps (Droidspaces, Magisk), so almost
+# everything here is Google: it was flashed with GApps and none of it is needed to
+# run containers. Lineage itself ships no Samsung store.
+
+# Google services that phone home / sync / listen
+com.google.android.gms
+com.google.android.gsf
+com.google.android.partnersetup
+com.google.android.feedback
+com.google.android.gm.exchange
+com.google.android.syncadapters.calendar
+com.google.android.syncadapters.contacts
+
+# "OK Google" always-listening enrolment
+com.android.hotwordenrollment.okgoogle
+com.android.hotwordenrollment.xgoogle
+com.google.android.googlequicksearchbox
+
+# Consumer apps and tooling that only matter to a human holding the phone
+com.google.android.projection.gearhead
+com.google.android.apps.pixelmigrate
+com.google.android.tts
+com.google.android.markup
+com.android.vending
+
+# The OTA checker: polls for updates over the network for no benefit on a server
+org.lineageos.updater

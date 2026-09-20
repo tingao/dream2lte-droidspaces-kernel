@@ -156,3 +156,23 @@ In download mode, Odin can flash the same image from an AP tar containing it as 
 
 - KernelSU integration. Magisk works here, and this is tested with it. Enable Daemon Mode in the Droidspaces app settings as their docs say.
 - No performance changes. On this SoC the useful levers are all userspace - `cpuhotplug/enabled`, the cpufreq ceiling, the Mali GPU ceiling - so a kernel "performance" change here would be cosmetic, and shipping one while claiming a gain would be dishonest. Kernel thermal trip points are deliberately left exactly stock.
+
+---
+
+## Running a container server on it? Two things that are not kernel problems
+
+A phone that serves something is woken by nobody, so two userspace behaviours matter more than they would
+on a desktop. Both are covered in `extras/`, and neither needs a kernel change.
+
+**It suspends, and the tunnel dies with it.** This handset sleeps constantly, and the Broadcom Wi-Fi
+driver cannot enter suspend cleanly (`dhd_set_suspend lpas failed -23`), so the radio stops passing
+traffic and a Cloudflare connector loses all four QUIC connections until somebody touches the screen.
+Hold a kernel wakeup source and the problem disappears: `extras/98-keep-awake.sh` into
+`/data/adb/service.d/`, reboot. Full reasoning, verification and costs in
+[docs/KEEP-AWAKE.md](docs/KEEP-AWAKE.md).
+
+**Stock software keeps phoning home.** On a headless device every store, updater and sync adapter is pure
+cost. `extras/debloat-apply.sh` applies a package list with `pm disable-user`, which is reversible from a
+rollback script it writes first — see `extras/debloat-list.txt` for exactly what is disabled and, just as
+importantly, the list of things deliberately kept.
+
